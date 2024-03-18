@@ -14,7 +14,9 @@ TernaryTiles(
   down,
   resolution,
   col,
-  direction = getOption("ternDirection", 1L)
+  border = col,
+  direction = getOption("ternDirection", 1L),
+  ...
 )
 }
 \arguments{
@@ -29,8 +31,12 @@ colour gradients, but at a computational cost.}
 
 \item{col}{Vector specifying the colour with which to fill each triangle.}
 
+\item{border}{Vector specifying the colour for the borders of each triangle.}
+
 \item{direction}{(optional) Integer specifying the direction that the
 current ternary plot should point: 1, up; 2, right; 3, down; 4, left.}
+
+\item{\dots}{Further arguments to \code{\link[graphics]{polygon}}.}
 }
 \value{
 \code{TernaryTiles()} is called for its side effect – painting a ternary

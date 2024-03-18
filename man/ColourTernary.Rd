@@ -11,6 +11,7 @@ ColourTernary(
   resolution = sqrt(ncol(values)),
   direction = getOption("ternDirection", 1L),
   legend,
+  lwd = 0.1,
   ...
 )
 
@@ -20,6 +21,7 @@ ColorTernary(
   resolution = sqrt(ncol(values)),
   direction = getOption("ternDirection", 1L),
   legend,
+  lwd = 0.1,
   ...
 )
 }
@@ -44,6 +46,8 @@ current ternary plot should point: 1, up; 2, right; 3, down; 4, left.}
 If not provided, no colour legend is displayed.
 Specify \code{TRUE} to generate automatically, or a single integer to generate
 \code{legend} annotations.}
+
+\item{lwd}{The line width, a positive number, defaulting to 0.1; see \code{\link[graphics]{par}}.}
 
 \item{\dots}{Further arguments to
 \code{\link[PlotTools:SpectrumLegend]{SpectrumLegend()}}.}

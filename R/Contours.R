@@ -377,7 +377,8 @@ TernaryDensity <- function (coordinates,
 
 #' @keywords internal
 #' @export
-TernaryUpTiles <- function(x, y, resolution, col) {
+TernaryUpTiles <- function(x, y, resolution, col, 
+                           border = rep(NA, length(col)), ...) {
   width <- 1 / resolution
   widthBy2 <- width / 2
   height <- sqrt(0.75) / resolution
@@ -385,7 +386,7 @@ TernaryUpTiles <- function(x, y, resolution, col) {
   vapply(seq_along(x), function(i) {
     cornerX <- x[i] + c(0, widthBy2, -widthBy2)
     cornerY <- y[i] + c(heightBy3 + heightBy3, rep(-heightBy3, 2))
-    polygon(cornerX, cornerY, col = col[i], border = NA)
+    polygon(cornerX, cornerY, col = col[i], border = border[i], ...)
     logical(0)
   }, logical(0))
   # Return:
@@ -394,7 +395,8 @@ TernaryUpTiles <- function(x, y, resolution, col) {
 
 #' @keywords internal
 #' @export
-TernaryDownTiles <- function(x, y, resolution, col) {
+TernaryDownTiles <- function(x, y, resolution, col,
+                             border = rep(NA, length(col)), ...) {
   width <- 1 / resolution
   widthBy2 <- width / 2
   height <- sqrt(0.75) / resolution
@@ -403,7 +405,7 @@ TernaryDownTiles <- function(x, y, resolution, col) {
   vapply(seq_along(x), function(i) {
     cornerX <- x[i] + c(0, widthBy2, -widthBy2)
     cornerY <- y[i] - c(heightBy3 + heightBy3, rep(-heightBy3, 2))
-    polygon(cornerX, cornerY, col = col[i], border = NA)
+    polygon(cornerX, cornerY, col = col[i], border = border[i], ...)
     logical(0)
   }, logical(0))
   
@@ -413,7 +415,8 @@ TernaryDownTiles <- function(x, y, resolution, col) {
 
 #' @keywords internal
 #' @export
-TernaryLeftTiles <- function(x, y, resolution, col) {
+TernaryLeftTiles <- function(x, y, resolution, col,
+                             border = rep(NA, length(col)), ...) {
   width <- sqrt(0.75) / resolution
   widthBy3 <- width / 3
   height <- 1 / resolution
@@ -422,7 +425,7 @@ TernaryLeftTiles <- function(x, y, resolution, col) {
   vapply(seq_along(x), function(i) {
     cornerX <- x[i] - c(widthBy3 + widthBy3, rep(-widthBy3, 2))
     cornerY <- y[i] + c(0, heightBy2, -heightBy2)
-    polygon(cornerX, cornerY, col = col[i], border = NA)
+    polygon(cornerX, cornerY, col = col[i], border = border[i], ...)
     logical(0)
   }, logical(0))
   # Return:
@@ -431,7 +434,8 @@ TernaryLeftTiles <- function(x, y, resolution, col) {
 
 #' @keywords internal
 #' @export
-TernaryRightTiles <- function(x, y, resolution, col) {
+TernaryRightTiles <- function(x, y, resolution, col,
+                              border = rep(NA, length(col)), ...) {
   width <- sqrt(0.75) / resolution
   widthBy3 <- width / 3
   height <- 1 / resolution
@@ -440,7 +444,7 @@ TernaryRightTiles <- function(x, y, resolution, col) {
   vapply(seq_along(x), function(i) {
     cornerX <- x[i] + c(widthBy3 + widthBy3, rep(-widthBy3, 2))
     cornerY <- y[i] + c(0, heightBy2, -heightBy2)
-    polygon(cornerX, cornerY, col = col[i], border = NA)
+    polygon(cornerX, cornerY, col = col[i], border = border[i], ...)
     logical(0)
   }, logical(0))
   # Return:
@@ -459,6 +463,9 @@ TernaryRightTiles <- function(x, y, resolution, col) {
 #' down (or right), `FALSE` otherwise.
 #' @inheritParams TernaryPointValues
 #' @param col Vector specifying the colour with which to fill each triangle.
+#' @param border Vector specifying the colour for the borders of each triangle.
+#' @template directionParam
+#' @param \dots Further arguments to \code{\link[graphics]{polygon}}.
 #' @return `TernaryTiles()` is called for its side effect – painting a ternary
 #' plot with coloured tiles.  It invisibly returns `NULL`.
 #'
@@ -474,15 +481,15 @@ TernaryRightTiles <- function(x, y, resolution, col) {
 #'
 #' @family functions for colouring and shading
 #' @export
-TernaryTiles <- function(x, y, down, resolution, col, 
-                         direction = getOption("ternDirection", 1L)) {
+TernaryTiles <- function(x, y, down, resolution, col, border = col,
+                         direction = getOption("ternDirection", 1L), ...) {
   down <- as.logical(down)
   if (direction %% 2) {
-    TernaryDownTiles(x[down], y[down], resolution, col[down])
-    TernaryUpTiles(x[!down], y[!down], resolution, col[!down])
+    TernaryDownTiles(x[down], y[down], resolution, col[down], border[down], ...)
+    TernaryUpTiles(x[!down], y[!down], resolution, col[!down], border[!down], ...)
   } else {
-    TernaryLeftTiles(x[down], y[down], resolution, col[down])
-    TernaryRightTiles(x[!down], y[!down], resolution, col[!down])
+    TernaryLeftTiles(x[down], y[down], resolution, col[down], border[down], ...)
+    TernaryRightTiles(x[!down], y[!down], resolution, col[!down], border[!down], ...)
   }
   # Return:
   invisible()
@@ -501,6 +508,7 @@ TernaryTiles <- function(x, y, down, resolution, col,
 #' `values["z", ]`.
 #' @inheritParams TernaryPointValues
 #' @template legendParam
+#' @param lwd The line width, a positive number, defaulting to 0.1; see \code{\link[graphics]{par}}.
 #' @param \dots Further arguments to
 #' [`SpectrumLegend()`][PlotTools::SpectrumLegend].
 #' @return `ColourTernary()` is called for its side effect – colouring a ternary
@@ -557,6 +565,7 @@ ColourTernary <- function(values,
                           resolution = sqrt(ncol(values)),
                           direction = getOption("ternDirection", 1L),
                           legend,
+                          lwd = 0.1,
                           ...) {
   z <- values["z", ]
   col <- if (is.null(spectrum) || 
@@ -584,7 +593,8 @@ ColourTernary <- function(values,
   }
   TernaryTiles(as.numeric(values["x", ]), as.numeric(values["y", ]),
                as.numeric(values["down", ]),
-               resolution = resolution, col = col, direction = direction)
+               resolution = resolution, col = col, border = col, 
+               direction = direction, lwd = lwd)
   
   if (!missing(legend)) {
     if (isTRUE(legend)) {
