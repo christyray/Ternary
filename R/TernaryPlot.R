@@ -221,9 +221,9 @@ TernaryPlot <- function(atip = NULL, btip = NULL, ctip = NULL,
   )
 
   # Set graphical parameters
-  mc <- match.call(expand.dots = FALSE)
-  graphicalParams <- names(mc$...) %in% names(par())
-  new_par <- mc$...[graphicalParams]
+  mc <- list(...)
+  graphicalParams <- names(mc) %in% names(par())
+  new_par <- mc[graphicalParams]
   if (isometric) {
     new_par$pty <- "s"
   }
